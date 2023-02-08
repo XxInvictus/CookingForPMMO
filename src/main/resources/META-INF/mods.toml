@@ -53,20 +53,20 @@ This is a compatibility mod for PMMO and Cooking For Blockheads allowing XP from
     modId="minecraft"
     mandatory=true
 # This version range declares a minimum of the current minecraft version up to but not including the next major version
-    versionRange="[1.16.5)"
+    versionRange="[1.16.5,)"
     ordering="NONE"
     side="BOTH"
 [[dependencies.cookingforpmmo]]
     modId="cookingforblockheads"
     mandatory=true
 # This version range declares a minimum of the current minecraft version up to but not including the next major version
-    versionRange="[9.3.4)"
+    versionRange="[9.3.4,)"
     ordering="AFTER"
     side="BOTH"
 [[dependencies.cookingforpmmo]]
     modId="pmmo"
     mandatory=true
 # This version range declares a minimum of the current minecraft version up to but not including the next major version
-    versionRange="[1.16.5-3.67.7)"
+    versionRange="[1.16.5-3.67.7,)"
     ordering="AFTER"
     side="BOTH"
