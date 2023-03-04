@@ -18,8 +18,8 @@ jobs:
       mod_name: ${{steps.moddetails.outputs.mod_name}}
       mod_version: ${{steps.moddetails.outputs.mod_version}}
       java_version: ${{steps.moddetails.outputs.java_version}}
-      mc_patch_version: ${{steps.versions.outputs.mc_patch_version}}
-      mc_minor_version: ${{steps.versions.outputs.mc_minor_version}}
+      mc_patch_version: ${{steps.patchversion.outputs.mc_patch_version}}
+      mc_minor_version: ${{steps.minorversion.outputs.mc_minor_version}}
       file_path: ${{steps.filepath.outputs.file_path}}
     steps:
       - name: Checkout
@@ -30,11 +30,12 @@ jobs:
           echo "mod_name=$(cat ./build.gradle | sed -n 's/archivesBaseName \= //p' | tr -d "'")" >> $GITHUB_OUTPUT
           echo "mod_version=$(cat ./build.gradle | sed -n 's/version \= //p' | tr -d "'")" >> $GITHUB_OUTPUT
           echo "java_version=$(cat ./build.gradle | grep -o -P '(?<=JavaLanguageVersion.of\().*(?=\))')" >> $GITHUB_OUTPUT
-      - name: Breakdown Versions
-        id: versions
-        run: |
-          echo "mc_patch_version=$(echo ${{ steps.moddetails.outputs.mod_version }} | awk -F- '{ print $1 }')" >> $GITHUB_OUTPUT
-          echo "mc_minor_version=$(echo ${{ steps.versions.outputs.mc_patch_version }} | awk -F. '{ print $1"-"$2 }')" >> $GITHUB_OUTPUT
+      - name: MC Patch Version
+        id: patchversion
+        run: echo "mc_patch_version=$(echo ${{ steps.moddetails.outputs.mod_version }} | awk -F- '{ print $1 }')" >> $GITHUB_OUTPUT
+      - name: MC Minor Version
+        id: minorversion
+        run: echo "mc_minor_version=$(echo ${{ steps.patchversion.outputs.mc_patch_version }} | awk -F. '{ print $1"-"$2 }')" >> $GITHUB_OUTPUT
       - name: Get Details
         id: filepath
         run: echo "file_path=./build/libs/${{ steps.moddetails.outputs.mod_name }}-${{ steps.moddetails.outputs.mod_version }}.jar" >> $GITHUB_OUTPUT
