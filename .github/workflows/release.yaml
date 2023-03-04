@@ -13,33 +13,37 @@ jobs:
     runs-on: ubuntu-latest
     outputs:
       file_path: ${{steps.file.outputs.file_path}}
-      mod_name: ${{steps.file.outputs.mod_name}}
-      mod_version: ${{steps.file.outputs.mod_version}}
-      mc_patch_version: ${{steps.file.outputs.mc_patch_version}}
-      mc_minor_version: ${{steps.file.outputs.mc_minor_version}}
-      java_version: ${{steps.file.outputs.java_version}}
     steps:
       - name: Get Details
         id: file
-        run: |
-          echo "::set-output name=mod_name::$(cat ./build.gradle | sed -n 'archivesBaseName \= //p' | tr -d "'")"
-          echo "::set-output name=mod_version::$(cat ./build.gradle | sed -n 's/version \= //p' | tr -d "'")"
-          echo "::set-output name=java_version::$(cat ./build.gradle | grep -o -P '(?<=JavaLanguageVersion.of\().*(?=\))')"
-          echo "::set-output name=mc_patch_version::$(echo ${{steps.file.outputs.mod_version}} | awk -F- '{print $1}')"
-          echo "::set-output name=mc_minor_version::$(echo ${{steps.file.outputs.mc_patch_version}} | awk -F. '{print $1"-"$2}')"
-          echo "::set-output name=file_path::./build/libs/${{steps.file.outputs.mod_name}}-${{steps.file.outputs.mod_version}}.jar"
+        run: echo "::set-output name=file_path::./build/libs/${{steps.file.outputs.mod_name}}-${{steps.file.outputs.mod_version}}.jar"
 
   build:
     name: Build and cache
     runs-on: ubuntu-latest
+    outputs:
+      file_path: ${{steps.mod_details.outputs.file_path}}
+      mod_name: ${{steps.mod_details.outputs.mod_name}}
+      mod_version: ${{steps.mod_details.outputs.mod_version}}
+      mc_patch_version: ${{steps.mod_details.outputs.mc_patch_version}}
+      mc_minor_version: ${{steps.mod_details.outputs.mc_minor_version}}
+      java_version: ${{steps.mod_details.outputs.java_version}}
     needs: [ path ]
     steps:
       - name: Checkout
         uses: actions/checkout@v2
+      - name: Get Details
+          id: mod_details
+          run: |
+            echo "::set-output name=mod_name::$(cat ./build.gradle | sed -n 'archivesBaseName \= //p' | tr -d "'")"
+            echo "::set-output name=mod_version::$(cat ./build.gradle | sed -n 's/version \= //p' | tr -d "'")"
+            echo "::set-output name=java_version::$(cat ./build.gradle | grep -o -P '(?<=JavaLanguageVersion.of\().*(?=\))')"
+            echo "::set-output name=mc_patch_version::$(echo ${{steps.mod_details.outputs.mod_version}} | awk -F- '{print $1}')"
+            echo "::set-output name=mc_minor_version::$(echo ${{steps.mod_details.outputs.mc_patch_version}} | awk -F. '{print $1"-"$2}')"
       - name: Set up JDK
         uses: actions/setup-java@v2
         with:
-          java-version: '${{needs.path.outputs.java_version}}'
+          java-version: '${{steps.mod_details.outputs.java_version}}'
           distribution: 'adopt'
           cache: 'gradle'
       - name: Grant execute permission for gradlew
@@ -70,6 +74,6 @@ jobs:
 #          game_endpoint: minecraft
 #          file_path: ${{needs.path.outputs.file_path}}
 #          changelog: ${{github.event.release.body}}
-#          display_name: ${{needs.path.outputs.mod_name}}-${{needs.path.outputs.mod_version}}
+#          display_name: ${{needs.build.outputs.mod_name}}-${{needs.build.outputs.mod_version}}
 #          release_type: release
-#          game_versions: minecraft-${{needs.path.outputs.mc_minor_version}}:${{needs.path.outputs.mc_patch_version}},java:Java ${{needs.path.outputs.java_version}},Forge
+#          game_versions: minecraft-${{needs.build.outputs.mc_minor_version}}:${{needs.build.outputs.mc_patch_version}},java:Java ${{needs.build.outputs.java_version}},Forge
