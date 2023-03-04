@@ -22,28 +22,27 @@ jobs:
     name: Build and cache
     runs-on: ubuntu-latest
     outputs:
-      file_path: ${{steps.mod_details.outputs.file_path}}
-      mod_name: ${{steps.mod_details.outputs.mod_name}}
-      mod_version: ${{steps.mod_details.outputs.mod_version}}
-      mc_patch_version: ${{steps.mod_details.outputs.mc_patch_version}}
-      mc_minor_version: ${{steps.mod_details.outputs.mc_minor_version}}
-      java_version: ${{steps.mod_details.outputs.java_version}}
+      mod_name: ${{steps.moddetails.outputs.mod_name}}
+      mod_version: ${{steps.moddetails.outputs.mod_version}}
+      mc_patch_version: ${{steps.moddetails.outputs.mc_patch_version}}
+      mc_minor_version: ${{steps.moddetails.outputs.mc_minor_version}}
+      java_version: ${{steps.moddetails.outputs.java_version}}
     needs: [ path ]
     steps:
       - name: Checkout
         uses: actions/checkout@v2
       - name: Get Details
-          id: mod_details
+          id: moddetails
           run: |
             echo "::set-output name=mod_name::$(cat ./build.gradle | sed -n 'archivesBaseName \= //p' | tr -d "'")"
             echo "::set-output name=mod_version::$(cat ./build.gradle | sed -n 's/version \= //p' | tr -d "'")"
             echo "::set-output name=java_version::$(cat ./build.gradle | grep -o -P '(?<=JavaLanguageVersion.of\().*(?=\))')"
-            echo "::set-output name=mc_patch_version::$(echo ${{steps.mod_details.outputs.mod_version}} | awk -F- '{print $1}')"
-            echo "::set-output name=mc_minor_version::$(echo ${{steps.mod_details.outputs.mc_patch_version}} | awk -F. '{print $1"-"$2}')"
+            echo "::set-output name=mc_patch_version::$(echo ${{steps.moddetails.outputs.mod_version}} | awk -F- '{print $1}')"
+            echo "::set-output name=mc_minor_version::$(echo ${{steps.moddetails.outputs.mc_patch_version}} | awk -F. '{print $1"-"$2}')"
       - name: Set up JDK
         uses: actions/setup-java@v2
         with:
-          java-version: '${{steps.mod_details.outputs.java_version}}'
+          java-version: '${{steps.moddetails.outputs.java_version}}'
           distribution: 'adopt'
           cache: 'gradle'
       - name: Grant execute permission for gradlew
