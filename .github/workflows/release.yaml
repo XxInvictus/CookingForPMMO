@@ -32,13 +32,13 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v2
       - name: Get Details
-          id: moddetails
-          run: |
-            echo "::set-output name=mod_name::$(cat ./build.gradle | sed -n 'archivesBaseName \= //p' | tr -d "'")"
-            echo "::set-output name=mod_version::$(cat ./build.gradle | sed -n 's/version \= //p' | tr -d "'")"
-            echo "::set-output name=java_version::$(cat ./build.gradle | grep -o -P '(?<=JavaLanguageVersion.of\().*(?=\))')"
-            echo "::set-output name=mc_patch_version::$(echo ${{steps.moddetails.outputs.mod_version}} | awk -F- '{print $1}')"
-            echo "::set-output name=mc_minor_version::$(echo ${{steps.moddetails.outputs.mc_patch_version}} | awk -F. '{print $1"-"$2}')"
+        id: moddetails
+        run: |
+          echo "::set-output name=mod_name::$(cat ./build.gradle | sed -n 'archivesBaseName \= //p' | tr -d "'")"
+          echo "::set-output name=mod_version::$(cat ./build.gradle | sed -n 's/version \= //p' | tr -d "'")"
+          echo "::set-output name=java_version::$(cat ./build.gradle | grep -o -P '(?<=JavaLanguageVersion.of\().*(?=\))')"
+          echo "::set-output name=mc_patch_version::$(echo ${{steps.moddetails.outputs.mod_version}} | awk -F- '{print $1}')"
+          echo "::set-output name=mc_minor_version::$(echo ${{steps.moddetails.outputs.mc_patch_version}} | awk -F. '{print $1"-"$2}')"
       - name: Set up JDK
         uses: actions/setup-java@v2
         with:
