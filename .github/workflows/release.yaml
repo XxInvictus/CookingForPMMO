@@ -16,7 +16,7 @@ jobs:
     steps:
       - name: Get Details
         id: file
-        run: echo "::set-output name=file_path::./build/libs/${{steps.file.outputs.mod_name}}-${{steps.file.outputs.mod_version}}.jar"
+        run: echo "file_path=./build/libs/${{steps.file.outputs.mod_name}}-${{steps.file.outputs.mod_version}}.jar" >> $GITHUB_OUTPUT
 
   build:
     name: Build and cache
@@ -33,12 +33,11 @@ jobs:
         uses: actions/checkout@v2
       - name: Get Details
         id: moddetails
-        run: |
-          echo "::set-output name=mod_name::$(cat ./build.gradle | sed -n 'archivesBaseName \= //p' | tr -d "'")"
-          echo "::set-output name=mod_version::$(cat ./build.gradle | sed -n 's/version \= //p' | tr -d "'")"
-          echo "::set-output name=java_version::$(cat ./build.gradle | grep -o -P '(?<=JavaLanguageVersion.of\().*(?=\))')"
-          echo "::set-output name=mc_patch_version::$(echo ${{steps.moddetails.outputs.mod_version}} | awk -F- '{print $1}')"
-          echo "::set-output name=mc_minor_version::$(echo ${{steps.moddetails.outputs.mc_patch_version}} | awk -F. '{print $1"-"$2}')"
+      -  run: echo "mod_name=$(cat ./build.gradle | sed -n 'archivesBaseName \= //p' | tr -d "'")" >> $GITHUB_OUTPUT
+      -  run: echo "mod_version=$(cat ./build.gradle | sed -n 's/version \= //p' | tr -d "'")" >> $GITHUB_OUTPUT
+      -  run: echo "java_version=$(cat ./build.gradle | grep -o -P '(?<=JavaLanguageVersion.of\().*(?=\))')" >> $GITHUB_OUTPUT
+      -  run: echo "mc_patch_version=$(echo ${{steps.moddetails.outputs.mod_version}} | awk -F- '{print $1}')" >> $GITHUB_OUTPUT
+      -  run: echo "mc_minor_version=$(echo ${{steps.moddetails.outputs.mc_patch_version}} | awk -F. '{print $1"-"$2}')" >> $GITHUB_OUTPUT
       - name: Set up JDK
         uses: actions/setup-java@v2
         with:
