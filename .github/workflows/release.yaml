@@ -22,11 +22,11 @@ jobs:
       - name: Get Details
         id: file
         run: |
-          echo "::set-output name=mod_name::$(cat build.gradle | sed -n 'archivesBaseName \= //p' | tr -d "'")"
-          echo "::set-output name=mod_version::$(cat build.gradle | sed -n 's/version \= //p' | tr -d "'")"
-          echo "::set-output name=java_version::$(cat build.gradle | grep -o -P '(?<=JavaLanguageVersion.of\().*(?=\))')"
+          echo "::set-output name=mod_name::$(cat ./build.gradle | sed -n 'archivesBaseName \= //p' | tr -d "'")"
+          echo "::set-output name=mod_version::$(cat ./build.gradle | sed -n 's/version \= //p' | tr -d "'")"
+          echo "::set-output name=java_version::$(cat ./build.gradle | grep -o -P '(?<=JavaLanguageVersion.of\().*(?=\))')"
           echo "::set-output name=mc_patch_version::$(echo ${{steps.file.outputs.mod_version}} | awk -F- '{print $1}')"
-          echo "::set-output name=mc_minor_version::$(echo ${{steps.file.outputs.mc_patch_version}} | awk -F. '{print $1"-"$2}'"
+          echo "::set-output name=mc_minor_version::$(echo ${{steps.file.outputs.mc_patch_version}} | awk -F. '{print $1"-"$2}')"
           echo "::set-output name=file_path::./build/libs/${{steps.file.outputs.mod_name}}-${{steps.file.outputs.mod_version}}.jar"
 
   build:
