@@ -86,7 +86,7 @@ jobs:
 
           files-primary: ${{ needs.path.outputs.file_path }}
 
-          name: ${{ needs.path.outputs.mod_name }}
+          name: ${{ needs.path.outputs.mod_name }}-${{ needs.path.outputs.mod_version }}
           version: ${{ needs.path.outputs.mod_version }}
           changelog-file: CHANGELOG.md
 
