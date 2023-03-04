@@ -60,7 +60,9 @@ jobs:
       - name: Cache
         uses: actions/cache@v3
         with:
-          path: ${{ needs.path.outputs.file_path }}
+          path: |
+            ${{ needs.path.outputs.file_path }}
+            CHANGELOG.md
           key: ${{ github.sha }}
 
   curseforge:
@@ -71,7 +73,9 @@ jobs:
       - name: Restore Cache
         uses: actions/cache@v3
         with:
-          path: ${{ needs.path.outputs.file_path }}
+          path: |
+            ${{ needs.path.outputs.file_path }}
+            CHANGELOG.md
           key: ${{ github.sha }}
       - name: Upload to CurseForge
         if: ${{ vars.MODREPO == 'curseforge' || vars.MODREPO == 'both' }}
@@ -84,7 +88,7 @@ jobs:
 
           name: ${{ needs.path.outputs.mod_name }}
           version: ${{ needs.path.outputs.mod_version }}
-          changelog: ${{ github.event.release.body }}
+          changelog-file: CHANGELOG.md
 
           loaders: |
             forge
@@ -104,7 +108,7 @@ jobs:
 
           name: ${{ needs.path.outputs.mod_name }}-${{ needs.path.outputs.mod_version }}
           version: ${{ needs.path.outputs.mod_version }}
-          changelog-file:
+          changelog-file: CHANGELOG.md
 
           loaders: |
             forge
