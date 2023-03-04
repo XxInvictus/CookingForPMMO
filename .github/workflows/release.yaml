@@ -16,7 +16,7 @@ jobs:
         uses: actions/checkout@v3
       - name: Get Details
         run: |
-          echo "mod_name=$(cat ./build.gradle | sed -n 'archivesBaseName \= //p' | tr -d "'")" >> $GITHUB_ENV
+          echo "mod_name=$(cat ./build.gradle | sed -n 's/archivesBaseName \= //p' | tr -d "'")" >> $GITHUB_ENV
           echo "mod_version=$(cat ./build.gradle | sed -n 's/version \= //p' | tr -d "'")" >> $GITHUB_ENV
           echo "java_version=$(cat ./build.gradle | grep -o -P '(?<=JavaLanguageVersion.of\().*(?=\))')" >> $GITHUB_ENV
       - name: Breakdown Versions
