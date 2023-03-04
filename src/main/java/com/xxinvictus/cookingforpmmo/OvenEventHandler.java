@@ -3,6 +3,7 @@ package com.xxinvictus.cookingforpmmo;
 import harmonised.pmmo.api.APIUtils;
 import harmonised.pmmo.config.JType;
 import harmonised.pmmo.events.ChunkDataHandler;
+import harmonised.pmmo.events.FurnaceHandler;
 import net.blay09.mods.cookingforblockheads.api.event.OvenCookedEvent;
 import net.minecraft.item.Food;
 import net.minecraft.item.ItemStack;
@@ -22,6 +23,7 @@ public class OvenEventHandler {
     @SubscribeEvent
     public static void onOvenEvent(OvenCookedEvent event){
         handleCooking(event.getResultItem(), event.getWorld(), event.getPos());
+        FurnaceHandler.handleSmelted(event.getResultItem(), event.getWorld(), event.getPos(), 1);
     }
 
     public static void handleCooking(ItemStack input, World world, BlockPos pos)

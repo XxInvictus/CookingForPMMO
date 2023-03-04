@@ -144,9 +144,9 @@ dependencies {
     // These dependencies get remapped to your current MCP mappings
     // deobf 'com.mod-buildcraft:buildcraft:6.0.8:dev'
     compileOnly fg.deobf("curse.maven:cfb-231484:3445172")
-    compileOnly fg.deobf("curse.maven:pmmo-353935:4360099")
+    compileOnly fg.deobf("curse.maven:pmmo-353935:4421028")
     runtimeOnly fg.deobf("curse.maven:cfb-231484:3445172")
-    runtimeOnly fg.deobf("curse.maven:pmmo-353935:4360099")
+    runtimeOnly fg.deobf("curse.maven:pmmo-353935:4421028")
     // For more info...
     // http://www.gradle.org/docs/current/userguide/artifact_dependencies_tutorial.html
     // http://www.gradle.org/docs/current/userguide/dependency_management.html
