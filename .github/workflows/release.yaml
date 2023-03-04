@@ -35,7 +35,7 @@ jobs:
         run: echo "mc_patch_version=$(echo ${{ steps.moddetails.outputs.mod_version }} | awk -F- '{ print $1 }')" >> $GITHUB_OUTPUT
       - name: MC Minor Version
         id: minorversion
-        run: echo "mc_minor_version=$(echo ${{ steps.patchversion.outputs.mc_patch_version }} | awk -F. '{ print $1"-"$2 }')" >> $GITHUB_OUTPUT
+        run: echo "mc_minor_version=$(echo ${{ steps.patchversion.outputs.mc_patch_version }} | awk -F. '{ print $1"."$2 }')" >> $GITHUB_OUTPUT
       - name: Get Details
         id: filepath
         run: echo "file_path=./build/libs/${{ steps.moddetails.outputs.mod_name }}-${{ steps.moddetails.outputs.mod_version }}.jar" >> $GITHUB_OUTPUT
@@ -102,7 +102,7 @@ jobs:
 
           files-primary: ${{ needs.path.outputs.file_path }}
 
-          name: ${{ needs.path.outputs.mod_name }}
+          name: ${{ needs.path.outputs.mod_name }}-${{ needs.path.outputs.mod_version }}
           version: ${{ needs.path.outputs.mod_version }}
           changelog-file:
 
