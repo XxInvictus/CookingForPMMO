@@ -11,20 +11,30 @@ jobs:
   path:
     name: Generate file path
     runs-on: ubuntu-latest
+    outputs:
+      mod_name: ${{steps.moddetails.outputs.mod_name}}
+      mod_version: ${{steps.moddetails.outputs.mod_version}}
+      java_version: ${{steps.moddetails.outputs.java_version}}
+      mc_patch_version: ${{steps.versions.outputs.mc_patch_version}}
+      mc_minor_version: ${{steps.versions.outputs.mc_minor_version}}
+      file_path: ${{steps.filepath.outputs.file_path}}
     steps:
       - name: Checkout
         uses: actions/checkout@v3
       - name: Get Details
+        id: moddetails
         run: |
-          echo "mod_name=$(cat ./build.gradle | sed -n 's/archivesBaseName \= //p' | tr -d "'")" >> $GITHUB_ENV
-          echo "mod_version=$(cat ./build.gradle | sed -n 's/version \= //p' | tr -d "'")" >> $GITHUB_ENV
-          echo "java_version=$(cat ./build.gradle | grep -o -P '(?<=JavaLanguageVersion.of\().*(?=\))')" >> $GITHUB_ENV
+          echo "mod_name=$(cat ./build.gradle | sed -n 's/archivesBaseName \= //p' | tr -d "'")" >> $GITHUB_OUTPUT
+          echo "mod_version=$(cat ./build.gradle | sed -n 's/version \= //p' | tr -d "'")" >> $GITHUB_OUTPUT
+          echo "java_version=$(cat ./build.gradle | grep -o -P '(?<=JavaLanguageVersion.of\().*(?=\))')" >> $GITHUB_OUTPUT
       - name: Breakdown Versions
+        id: versions
         run: |
-          echo "mc_patch_version=$(echo ${{env.mod_version}} | awk -F- '{print $1}')" >> $GITHUB_ENV
-          echo "mc_minor_version=$(echo ${{env.mc_patch_version}} | awk -F. '{print $1"-"$2}')" >> $GITHUB_ENV
+          echo "mc_patch_version=$(echo ${{steps.moddetails.outputs.mod_version}} | awk -F- '{print $1}')" >> $GITHUB_OUTPUT
+          echo "mc_minor_version=$(echo ${{steps.versions.outputs.mc_patch_version}} | awk -F. '{print $1"-"$2}')" >> $GITHUB_OUTPUT
       - name: Get Details
-        run: echo "file_path=./build/libs/${{env.mod_name}}-${{env.mod_version}}.jar" >> $GITHUB_ENV
+        id: filepath
+        run: echo "file_path=./build/libs/${{steps.moddetails.outputs.mod_name}}-${{steps.moddetails.outputs.mod_version}}.jar" >> $GITHUB_OUTPUT
 
   build:
     name: Build and cache
@@ -36,7 +46,7 @@ jobs:
       - name: Set up JDK
         uses: actions/setup-java@v2
         with:
-          java-version: '${{env.java_version}}'
+          java-version: '${{needs.path.outputs.java_version}}'
           distribution: 'adopt'
           cache: 'gradle'
       - name: Grant execute permission for gradlew
@@ -57,7 +67,7 @@ jobs:
 #      - name: Restore cache
 #        uses: actions/cache@v2
 #        with:
-#          path: ${{env.file_path}}
+#          path: ${{needs.path.outputs.file_path}}
 #          key: ${{github.sha}}
 #      - name: Upload to CurseForge
 #        uses: itsmeow/curseforge-upload@v3
@@ -65,8 +75,8 @@ jobs:
 #          token: ${{secrets.curseforge_api}}
 #          project_id: 433633
 #          game_endpoint: minecraft
-#          file_path: ${{env.file_path}}
+#          file_path: ${{needs.path.outputs.file_path}}
 #          changelog: ${{github.event.release.body}}
-#          display_name: ${{env.mod_name}}-${{env.mod_version}}
+#          display_name: ${{needs.path.outputs.mod_name}}-${{needs.path.outputs.mod_version}}
 #          release_type: release
-#          game_versions: minecraft-${{env.mc_minor_version}}:${{env.mc_patch_version}},java:Java ${{env.java_version}},Forge
+#          game_versions: minecraft-${{needs.path.outputs.mc_minor_version}}:${{needs.path.outputs.mc_patch_version}},java:Java ${{needs.path.outputs.java_version}},Forge
